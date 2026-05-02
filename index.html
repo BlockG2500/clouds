@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+body {
+  background: #1a2a3a;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  user-select: none;
+}
+
+/* ── ENTER SCREEN ── */
+#enter-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  gap: 16px;
+}
+
+#enter-screen .enter-title {
+  color: rgba(255,255,255,0.85);
+  font-family: 'Courier New', monospace;
+  font-size: clamp(14px, 2vw, 20px);
+  letter-spacing: 0.15em;
+}
+
+#enter-screen .enter-sub {
+  color: rgba(255,255,255,0.3);
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+#enter-screen .enter-blink {
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── DESKTOP ── */
+#desktop {
+  width: 100%;
+  height: calc(100vh - 30px);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+}
+
+/* ── FILE ICON ── */
+.file-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  width: 72px;
+  padding: 5px 4px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  transition: background 0.1s;
+}
+
+.file-icon:hover {
+  border: 1px dotted rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.08);
+}
+
+.file-icon.selected {
+  border: 1px dotted rgba(255,255,255,0.6);
+  background: rgba(0, 80, 160, 0.5);
+}
+
+/* CSS-drawn TXT icon */
+.txt-icon {
+  width: 38px;
+  height: 46px;
+  background: #f8f8f5;
+  position: relative;
+  border: 1px solid #bbb;
+  clip-path: polygon(0 0, 74% 0, 100% 26%, 100% 100%, 0 100%);
+  flex-shrink: 0;
+}
+
+.txt-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 12px;
+  background: #ccc;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.txt-icon .txt-lines {
+  position: absolute;
+  top: 16px;
+  left: 5px;
+  right: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.txt-icon .txt-lines span {
+  display: block;
+  height: 2px;
+  background: #aaa;
+  border-radius: 1px;
+}
+
+.txt-icon .txt-lines span:nth-child(3) { width: 70%; }
+.txt-icon .txt-lines span:nth-child(4) { width: 50%; }
+
+.file-name {
+  color: white;
+  font-size: 11px;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+  word-break: break-word;
+  max-width: 70px;
+  line-height: 1.3;
+}
+
+/* ── TASKBAR ── */
+#taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  gap: 4px;
+  z-index: 50;
+}
+
+.taskbar-time {
+  margin-left: auto;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  padding: 0 8px;
+  border: 1px solid;
+  border-color: #888 #fff #fff #888;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  background: #c0c0c0;
+}
+
+/* ── NOTEPAD WINDOW ── */
+.notepad-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(580px, 92vw);
+  min-height: 280px;
+  max-height: 78vh;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #888 #888 #fff;
+  box-shadow: 2px 2px 0 #dfdfdf inset, 4px 4px 16px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+
+.window-titlebar {
+  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  color: #fff;
+  padding: 3px 4px 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.window-title-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.window-title-icon {
+  width: 14px;
+  height: 14px;
+  background: #f8f8f5;
+  border: 1px solid #aaa;
+  clip-path: polygon(0 0, 70% 0, 100% 30%, 100% 100%, 0 100%);
+  flex-shrink: 0;
+}
+
+.window-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.win-btn {
+  background: #c0c0c0;
+  border: 1px solid;
+  border-color: #fff #888 #888 #fff;
+  width: 16px;
+  height: 14px;
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  color: #000;
+  line-height: 1;
+}
+
+.win-btn:active {
+  border-color: #888 #fff #fff #888;
+}
+
+.win-btn.close:hover {
+  background: #e04040;
+  color: #fff;
+}
+
+.window-menu {
+  background: #c0c0c0;
+  border-bottom: 1px solid #888;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.window-menu span {
+  padding: 0 4px;
+  cursor: default;
+}
+
+.window-menu span:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.window-body {
+  flex: 1;
+  background: #fff;
+  border: 1px solid;
+  border-color: #888 #fff #fff #888;
+  margin: 4px;
+  padding: 12px;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #111;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  min-height: 180px;
+  user-select: text;
+  cursor: text;
+}
+
+/* Cursor blink in window body */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: #111;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 0.7s step-end infinite;
+}
+
+/* ── BACKDROP ── */
+.window-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: transparent;
+}
+
+/* ── ERROR NOTICE ── */
+#load-notice {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.5);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 2px;
+  text-align: center;
+  pointer-events: none;
+}
+```
+
+  </style>
+</head>
+<body>
+
+<!-- Enter Screen -->
+
+<div id="enter-screen" onclick="enterDesktop()">
+  <p class="enter-title enter-blink">_ click anywhere to continue _</p>
+  <p class="enter-sub">you are not alone</p>
+</div>
+
+<!-- Desktop -->
+
+<div id="desktop"></div>
+<div id="load-notice" style="display:none;"></div>
+
+<!-- Taskbar -->
+
+<div id="taskbar">
+  <div class="taskbar-time" id="clock">00:00</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CLOCK
+// ══════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = h + ':' + m;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ══════════════════════════════════════════
+//  AUDIO — Web Audio pop sound
+// ══════════════════════════════════════════
+let audioCtx = null;
+
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playPop() {
+  if (!audioCtx) return;
+  try {
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(260, audioCtx.currentTime + 0.06);
+
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.09);
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+//  MUSIC
+// ══════════════════════════════════════════
+let musicAudio = null;
+
+async function startMusic() {
+  let files = [];
+
+  // Try manifest first
+  try {
+    const res = await fetch('music/manifest.json');
+    if (res.ok) files = await res.json();
+  } catch(e) {}
+
+  // Fallback: try music.mp3 directly
+  if (files.length === 0) files = ['music.mp3'];
+
+  const chosen = files[Math.floor(Math.random() * files.length)];
+  musicAudio = new Audio('music/' + chosen);
+  musicAudio.loop  = true;
+  musicAudio.volume = 0.35;
+  musicAudio.play().catch(() => {});
+}
+
+// ══════════════════════════════════════════
+//  ENTER
+// ══════════════════════════════════════════
+function enterDesktop() {
+  initAudio();
+  startMusic();
+  document.getElementById('enter-screen').style.display = 'none';
+  loadFiles();
+}
+
+// ══════════════════════════════════════════
+//  LOAD FILES FROM messages/manifest.json
+// ══════════════════════════════════════════
+async function loadFiles() {
+  const desktop = document.getElementById('desktop');
+  let files = [];
+
+  try {
+    const res = await fetch('messages/manifest.json');
+    if (!res.ok) throw new Error();
+    files = await res.json();
+  } catch(e) {
+    showNotice('Place your .txt files in /messages/ and list them in messages/manifest.json');
+    return;
+  }
+
+  if (files.length === 0) {
+    showNotice('No files found in manifest.');
+    return;
+  }
+
+  for (const filename of files) {
+    const icon = createFileIcon(filename);
+    desktop.appendChild(icon);
+  }
+}
+
+function createFileIcon(filename) {
+  const wrap = document.createElement('div');
+  wrap.className = 'file-icon';
+
+  wrap.innerHTML = `
+    <div class="txt-icon">
+      <div class="txt-lines">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <span class="file-name">${escHtml(filename)}</span>
+  `;
+
+  wrap.addEventListener('click', () => {
+    document.querySelectorAll('.file-icon').forEach(i => i.classList.remove('selected'));
+    wrap.classList.add('selected');
+    openFile(filename);
+  });
+
+  wrap.addEventListener('dblclick', () => {}); // already handled by click
+
+  return wrap;
+}
+
+// ══════════════════════════════════════════
+//  OPEN FILE / NOTEPAD WINDOW
+// ══════════════════════════════════════════
+let typingAbort = null; // for cancelling ongoing typing
+
+async function openFile(filename) {
+  // Cancel any ongoing typing
+  if (typingAbort) { typingAbort.cancelled = true; typingAbort = null; }
+
+  // Remove existing windows
+  document.querySelectorAll('.notepad-window, .window-backdrop').forEach(el => el.remove());
+
+  let text = '';
+  try {
+    const res = await fetch('messages/' + filename);
+    if (!res.ok) throw new Error();
+    text = await res.text();
+  } catch(e) {
+    text = '[Error: could not load file]';
+  }
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'window-backdrop';
+  backdrop.addEventListener('click', closeWindow);
+
+  const win = document.createElement('div');
+  win.className = 'notepad-window';
+  win.innerHTML = `
+    <div class="window-titlebar">
+      <div class="window-title-left">
+        <div class="window-title-icon"></div>
+        <span>${escHtml(filename)} - Notepad</span>
+      </div>
+      <div class="window-controls">
+        <div class="win-btn">_</div>
+        <div class="win-btn">□</div>
+        <div class="win-btn close" id="win-close-btn">✕</div>
+      </div>
+    </div>
+    <div class="window-menu">
+      <span>File</span><span>Edit</span><span>Format</span><span>View</span><span>Help</span>
+    </div>
+    <div class="window-body" id="window-body-inner"></div>
+  `;
+
+  win.addEventListener('click', e => e.stopPropagation());
+  win.querySelector('#win-close-btn').addEventListener('click', closeWindow);
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(win);
+
+  // Start typing
+  const abort = { cancelled: false };
+  typingAbort = abort;
+  await typeText(document.getElementById('window-body-inner'), text, abort);
+}
+
+function closeWindow() {
+  if (typingAbort) { typingAbort.cancelled = true; typingAbort = null; }
+  document.querySelectorAll('.notepad-window, .window-backdrop').forEach(el => el.remove());
+  document.querySelectorAll('.file-icon').forEach(i => i.classList.remove('selected'));
+}
+
+// ══════════════════════════════════════════
+//  TYPING ANIMATION
+// ══════════════════════════════════════════
+const TYPING_SPEED = 42; // ms per character
+
+async function typeText(el, rawText, abort) {
+  // Split on [pause] tokens (case-insensitive)
+  const parts = rawText.split(/(\[pause\])/gi);
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  el.appendChild(cursor);
+
+  for (const part of parts) {
+    if (abort.cancelled) break;
+
+    if (/^\[pause\]$/i.test(part)) {
+      await sleep(2000, abort);
+      continue;
+    }
+
+    for (const char of part) {
+      if (abort.cancelled) break;
+      // Insert character before cursor
+      cursor.insertAdjacentText('beforebegin', char);
+      el.scrollTop = el.scrollHeight;
+      if (char !== ' ' && char !== '\n') playPop();
+      await sleep(TYPING_SPEED, abort);
+    }
+  }
+
+  if (!abort.cancelled) cursor.remove();
+}
+
+function sleep(ms, abort) {
+  return new Promise(resolve => {
+    const id = setTimeout(resolve, ms);
+    // Poll abort
+    if (abort) {
+      const check = setInterval(() => {
+        if (abort.cancelled) { clearTimeout(id); clearInterval(check); resolve(); }
+      }, 50);
+      setTimeout(() => clearInterval(check), ms + 100);
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showNotice(msg) {
+  const el = document.getElementById('load-notice');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
