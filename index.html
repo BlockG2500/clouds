@@ -540,7 +540,7 @@ function closeWindow() {
 // ══════════════════════════════════════════
 //  TYPING ANIMATION
 // ══════════════════════════════════════════
-const TYPING_SPEED = 50; // ms per character
+const TYPING_SPEED = 67; // ms per character
 
 async function typeText(el, rawText, abort) {
   // Split on [pause] tokens (case-insensitive)
@@ -553,7 +553,7 @@ async function typeText(el, rawText, abort) {
     if (abort.cancelled) break;
 
     if (/^\[pause\]$/i.test(part)) {
-      await sleep(2000, abort);
+      await sleep(3000, abort);
       continue;
     }
 
